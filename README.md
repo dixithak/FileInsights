@@ -13,7 +13,8 @@
 
 This system leverages **AWS S3**, **EventBridge**, **SQS**, **Lambda**, **StepFunctions**, **DynamoDB** to process, categorize, and store file metadata with high precision and scalability.
 
-This will be scaledup in the future to process and store more insights
+Note: This will be scaledup in the future to process and store more insights
+
 ---
 
 ## 🧩 Key Features
