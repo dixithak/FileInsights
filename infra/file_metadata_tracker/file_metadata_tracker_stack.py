@@ -67,7 +67,7 @@ class FileMetadataTrackerStack(Stack):
             self, "S3EventRouterLambda",
             runtime=_lambda.Runtime.PYTHON_3_12,
             handler="event_router.handler",
-            code=_lambda.Code.from_asset("Router_lambda"),
+            code=_lambda.Code.from_asset("code/Router_lambda"),
             timeout=Duration.seconds(60),
             environment={
                 "CREATED_SF_ARN": "<TO_BE_FILLED>",
@@ -151,21 +151,29 @@ class FileMetadataTrackerStack(Stack):
             layer_version_arn="arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python312:1"
         )
 
+        helper_layer = _lambda.LayerVersion(
+            self, "HelperLayer",
+            code=_lambda.Code.from_asset("infra/layers/helper_layer"),
+            compatible_runtimes=[_lambda.Runtime.PYTHON_3_12]
+        )
+
+
 
         # Lambda Function
         MetaData_lambda_fn = _lambda.Function(
             self, FILE_META_DATA_PROCESSOR_LAMBDA,
             runtime=_lambda.Runtime.PYTHON_3_12,
             handler="metadata_extractor.metadata_handler",
-            code=_lambda.Code.from_asset("MetaData_lambda"),
-            layers=[pyarrow_layer],
+            code=_lambda.Code.from_asset("code/MetaData_lambda"),
+            layers=[pyarrow_layer, helper_layer],
             environment={
                 ENV_LATEST_TABLE: latest_table.table_name,
                 ENV_SKIPPED_TABLE: skipped_table.table_name,
                 ENV_FAILED_TABLE: failed_table.table_name,
                 ENV_HISTORY_TABLE: history_table.table_name
             },
-            role=MetaData_lambda_role
+            role=MetaData_lambda_role,
+            timeout=Duration.seconds(900) 
         )
 
         deletion_lambdarole = iam.Role(
@@ -183,7 +191,7 @@ class FileMetadataTrackerStack(Stack):
             self, "DeletionTrackerLambda",
             runtime=_lambda.Runtime.PYTHON_3_12,
             handler="deletion_tracker.handler",
-            code=_lambda.Code.from_asset("Deletion_lambda"),
+            code=_lambda.Code.from_asset("code/Deletion_lambda"),
             environment={
                 ENV_LATEST_TABLE: latest_table.table_name,
                 ENV_DELETED_TABLE: deleted_table.table_name
