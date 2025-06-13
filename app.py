@@ -3,7 +3,7 @@ import os
 
 import aws_cdk as cdk
 
-from file_metadata_tracker.file_metadata_tracker_stack import FileMetadataTrackerStack
+from infra.file_metadata_tracker.file_metadata_tracker_stack import FileMetadataTrackerStack
 
 
 app = cdk.App()
