@@ -1,58 +1,61 @@
+# 📁 FileInsights
 
-# Welcome to your CDK Python project!
+[![Build Status](https://img.shields.io/github/actions/workflow/status/dixithak/FileInsights/build.yml?branch=main)](https://github.com/dixithak/FileInsights/actions)
+[![License](https://img.shields.io/github/license/dixithak/FileInsights)](https://github.com/dixithak/FileInsights/blob/main/LICENSE)
+[![Last Commit](https://img.shields.io/github/last-commit/dixithak/FileInsights)](https://github.com/dixithak/FileInsights)
+[![Issues](https://img.shields.io/github/issues/dixithak/FileInsights)](https://github.com/dixithak/FileInsights/issues)
 
-This is a blank project for CDK development with Python.
+---
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+## Overview
 
-This project is set up like a standard Python project.  The initialization
-process also creates a virtualenv within this project, stored under the `.venv`
-directory.  To create the virtualenv it assumes that there is a `python3`
-(or `python` for Windows) executable in your path with access to the `venv`
-package. If for any reason the automatic creation of the virtualenv fails,
-you can create the virtualenv manually.
+**FileInsights** is a cloud-native, event-driven metadata tracking system for file operations on AWS. It captures and manages metadata for file uploads and deletions in real-time, providing full traceability, analytics, and operational insight across a file's lifecycle.
 
-To manually create a virtualenv on MacOS and Linux:
+This system leverages **AWS S3**, **EventBridge**, **SQS**, **Lambda**, **StepFunctions**, **DynamoDB** to process, categorize, and store file metadata with high precision and scalability.
 
-```
-$ python3 -m venv .venv
-```
+This will be scaledup in the future to process and store more insights
+---
 
-After the init process completes and the virtualenv is created, you can use the following
-step to activate your virtualenv.
+## 🧩 Key Features
 
-```
-$ source .venv/bin/activate
-```
+- 🔁 Event-driven architecture using AWS-native components
+- 📊 Metadata routed into multiple categorized tables:
+  - `FileMetadataLatest`: current view
+  - `FileMetadataHistory`: full audit trail
+  - `FileMetadataSkipped`: filtered/bypassed files
+  - `FileMetadataFailed`: processing errors
+  - `FileDeleted`: log of removed files
+- 🧠 Smart routing function separates upload and deletion flows
+- 🔐 Fine-grained IAM roles (`RouterRole`, `MetaDataProcessorRole`)
+- ☁️ 100% serverless design
 
-If you are a Windows platform, you would activate the virtualenv like this:
+---
 
-```
-% .venv\Scripts\activate.bat
-```
+## 🧬 Architecture
 
-Once the virtualenv is activated, you can install the required dependencies.
+![Architecture](./images/FileMetaDataTracker.png)
 
-```
-$ pip install -r requirements.txt
-```
+**How it works:**
+1. Clients upload or delete files in an **S3 bucket**.
+2. **S3 triggers Event Bridge Rule** to write to an **SQS** which are consumed by the **Router Lambda**.
+3. The router forwards events to the following stepfunctions:
+   - **UploadTracker** → handled by `MetaDataProcessor` Lambda
+   - **DeletionTracker** → handled by `DeletionTracker` Lambda
+4. Metadata is processed and stored in DynamoDB tables based on outcome (latest, history, deleted, etc.).
 
-At this point you can now synthesize the CloudFormation template for this code.
+---
 
-```
-$ cdk synth
-```
+## 🚀 Use Cases
 
-To add additional dependencies, for example other CDK libraries, just add
-them to your `setup.py` file and rerun the `pip install -r requirements.txt`
-command.
+- 🔍 Metadata auditing for compliance and governance
+- 📈 File event analytics over time
+- ✅ Verifying and validating file operations
+- 🔐 Traceable deletion records (e.g., for GDPR)
 
-## Useful commands
+---
 
- * `cdk ls`          list all stacks in the app
- * `cdk synth`       emits the synthesized CloudFormation template
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk docs`        open CDK documentation
+## ⚙️ Setup
 
-Enjoy!
+- To be updated
+
+
