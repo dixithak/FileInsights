@@ -1,4 +1,4 @@
-# For layers this is proposed, but this did not work.
+# For layers this is proposed, but this did not work. Cpython files were not in the correct place, need to deepdive
 
 FROM public.ecr.aws/lambda/python:3.12
 
