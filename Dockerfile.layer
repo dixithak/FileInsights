@@ -1,0 +1,8 @@
+# For layers this is proposed, but this did not work.
+
+FROM public.ecr.aws/lambda/python:3.12
+
+RUN pip install --upgrade pip \
+    && pip install pyarrow -t /opt/python
+
+CMD [ "bash" ]
